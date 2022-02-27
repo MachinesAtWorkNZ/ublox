@@ -1475,6 +1475,8 @@ bool HpgRefProduct::configureUblox() {
     if(!gps.disableTmode3())
       throw std::runtime_error("Failed to disable TMODE3.");
     mode_ = DISABLED;
+    if(!gps.configRtcm(rtcm_ids, rtcm_rates))
+      throw std::runtime_error("Failed to set RTCM rates");
   } else if(tmode3_ == ublox_msgs::CfgTMODE3::FLAGS_MODE_FIXED) {
     if(!gps.configTmode3Fixed(lla_flag_, arp_position_, arp_position_hp_,
                                fixed_pos_acc_))
@@ -1892,7 +1894,7 @@ void rtcmCallback(const rtcm_msgs::Message::ConstPtr &msg) {
 int main(int argc, char** argv) {
   ros::init(argc, argv, "ublox_gps");
   nh.reset(new ros::NodeHandle("~"));
-  ros::Subscriber subRtcm = nh->subscribe("/rtcm", 10, rtcmCallback);
+  ros::Subscriber subRtcm = nh->subscribe("rtcm", 10, rtcmCallback);
   nh->param("debug", ublox_gps::debug, 1);
   if(ublox_gps::debug) {
     if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
