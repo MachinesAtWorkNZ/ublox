@@ -1209,13 +1209,14 @@ bool UbloxFirmware8::configureUblox() {
     }
   }
 
+  ROS_WARN("Driver does not configure GNSS. Ensure GNSS configuration is correct in U-Center");
   // If the GNSS is already configured correctly, do not re-configure GNSS
   // since this requires a cold reset
-  if (correct)
-    ROS_DEBUG("U-Blox GNSS configuration is correct. GNSS not re-configured.");
-  else if (!gps.configGnss(cfg_gnss, boost::posix_time::seconds(15)))
-    throw std::runtime_error(std::string("Failed to cold reset device ") +
-                             "after configuring GNSS");
+  //if (correct)
+  //  ROS_DEBUG("U-Blox GNSS configuration is correct. GNSS not re-configured.");
+  //else if (!gps.configGnss(cfg_gnss, boost::posix_time::seconds(15)))
+  //  throw std::runtime_error(std::string("Failed to cold reset device ") +
+  //                           "after configuring GNSS");
 
   //
   // NMEA config
