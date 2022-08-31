@@ -33,7 +33,6 @@
 #include "checksum.h"
 
 #include <ros/serialization.h>
-#include <ublox_msgs/NavRELPOSNED9.h>
 
 namespace ublox {
 
@@ -56,7 +55,6 @@ void Serializer<T>::write(uint8_t *data, uint32_t size,
   ros::serialization::OStream stream(data, size);
   ros::serialization::Serializer<T>::write(stream, message);
 }
-
 
 } // namespace ublox
 
