@@ -31,7 +31,6 @@
 #define UBLOX_SERIALIZATION_UBLOX_MSGS_H
 
 #include <ros/console.h>
-#include <std_msgs/Header.h>
 #include <ublox/serialization.h>
 #include <ublox_msgs/ublox_msgs.h>
 
@@ -840,14 +839,8 @@ struct Serializer<ublox_msgs::EsfRAW_<ContainerAllocator> > {
 ///
 /// @brief Serializes the EsfSTATUS message which has a repeated block.
 ///
-template <typename ContainerAllocator>
-struct Serializer<ublox_msgs::EsfSTATUS_<ContainerAllocator> > {
-  typedef ublox_msgs::EsfSTATUS_<ContainerAllocator> Msg;
-  typedef boost::call_traits<Msg> CallTraits;
+template <typename ContainerAllocator>    m.header = std_msgs::Header();
 
-  static void read(const uint8_t *data, uint32_t count, 
-                   typename CallTraits::reference m) {
-    ros::serialization::IStream stream(const_cast<uint8_t *>(data), count);
     stream.next(m.iTOW);
     stream.next(m.version);
     stream.next(m.fusionMode);
@@ -919,7 +912,6 @@ struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
     stream.next(m.accHeading);
     stream.next(m.reserved3);
     stream.next(m.flags);
-    m.header = std_msgs::Header();
     m.header.stamp = ros::Time::now();
   }
 
@@ -1025,7 +1017,6 @@ struct Serializer<ublox_msgs::NavPVT_<ContainerAllocator> > {
       stream.next(m.headVeh);
       stream.next(m.magDec);
       stream.next(m.magAcc);
-      m.header = std_msgs::Header();
       m.header.stamp = ros::Time::now();
     }
 
