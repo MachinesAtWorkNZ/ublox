@@ -839,8 +839,14 @@ struct Serializer<ublox_msgs::EsfRAW_<ContainerAllocator> > {
 ///
 /// @brief Serializes the EsfSTATUS message which has a repeated block.
 ///
-template <typename ContainerAllocator>    m.header = std_msgs::Header();
+template <typename ContainerAllocator>
+struct Serializer<ublox_msgs::EsfSTATUS_<ContainerAllocator> > {
+  typedef ublox_msgs::EsfSTATUS_<ContainerAllocator> Msg;
+  typedef boost::call_traits<Msg> CallTraits;
 
+  static void read(const uint8_t *data, uint32_t count, 
+                   typename CallTraits::reference m) {
+    ros::serialization::IStream stream(const_cast<uint8_t *>(data), count);
     stream.next(m.iTOW);
     stream.next(m.version);
     stream.next(m.fusionMode);
