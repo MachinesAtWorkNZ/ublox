@@ -878,9 +878,9 @@ struct Serializer<ublox_msgs::EsfSTATUS_<ContainerAllocator> > {
 };
 
 ///
-/// @brief Serializes the NavRELPOSNED9 message, which has a differing message definitions on
-/// each end (additional Header on ROS-side which is not present on Ublox Receiver). Overriden read
-/// method to add stamp, falls back to ros::serialization::Serializer for other tasks.
+/// @brief Serializes the NavRELPOSNED9 message, which has differing message definitions on each
+/// end (additional Header on ROS-side which is not present on Ublox Receiver). Overridden read
+/// method to add stamp, falls back to ros::serialization::Serializer for other methods.
 ///
 template <typename ContainerAllocator>
 struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
@@ -917,9 +917,9 @@ struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
 };
 
 ///
-/// @brief Serializes the NavPVT message, which has a differing message definitions on
-/// each end (additional Header on ROS-side which is not present on Ublox Receiver). Overriden read
-/// method to add stamp, falls back to ros::serialization::Serializer for other tasks.
+/// @brief Serializes the NavPVT message, which has differing message definitions on each
+/// end (additional Header on ROS-side which is not present on Ublox Receiver). Overridden read
+/// method to add stamp, falls back to ros::serialization::Serializer for other methods.
 ///
 template <typename ContainerAllocator>
 struct Serializer<ublox_msgs::NavPVT_<ContainerAllocator> > {
