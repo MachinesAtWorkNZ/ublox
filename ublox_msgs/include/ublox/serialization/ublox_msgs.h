@@ -31,6 +31,7 @@
 #define UBLOX_SERIALIZATION_UBLOX_MSGS_H
 
 #include <ros/console.h>
+#include <std_msgs/Header.h>
 #include <ublox/serialization.h>
 #include <ublox_msgs/ublox_msgs.h>
 
@@ -918,6 +919,7 @@ struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
     stream.next(m.accHeading);
     stream.next(m.reserved3);
     stream.next(m.flags);
+    m.header = std_msgs::Header();
     m.header.stamp = ros::Time::now();
   }
 
@@ -1023,6 +1025,7 @@ struct Serializer<ublox_msgs::NavPVT_<ContainerAllocator> > {
       stream.next(m.headVeh);
       stream.next(m.magDec);
       stream.next(m.magAcc);
+      m.header = std_msgs::Header();
       m.header.stamp = ros::Time::now();
     }
 
