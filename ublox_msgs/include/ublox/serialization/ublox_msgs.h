@@ -875,24 +875,18 @@ struct Serializer<ublox_msgs::EsfSTATUS_<ContainerAllocator> > {
     for(std::size_t i = 0; i < m.sens.size(); ++i) 
       ros::serialization::serialize(stream, m.sens[i]);
   }
-
 };
 
 ///
 /// @brief Serializes the NavRELPOSNED9 message, which has a differing message definitions on
-/// each end (additional Header on ROS-side which is not present on Ublox Receiver)
+/// each end (additional Header on ROS-side which is not present on Ublox Receiver). Overriden read
+/// method to add stamp, falls back to ros::serialization::Serializer for other tasks.
 ///
 template <typename ContainerAllocator>
 struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
   typedef ublox_msgs::NavRELPOSNED9_<ContainerAllocator> Msg;
   typedef boost::call_traits<Msg> CallTraits;
 
-  /// @brief 
-  /// As the GPS Module will produce a message w/o stamp, 
-  /// this method differs from the actual message structure
-  /// @param data 
-  /// @param count 
-  /// @param m 
   static void read(const uint8_t *data, uint32_t count, 
                   typename CallTraits::reference m) {
     ROS_INFO_ONCE("Using NavRELPOSNED9 serializer defined in ublox_msgs to read message");
@@ -920,189 +914,57 @@ struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
     stream.next(m.flags);
     m.header.stamp = ros::Time::now();
   }
-
-  /// Used by the writer - Shouldn't need to worry as this message is only read
-  static uint32_t serializedLength (typename CallTraits::param_type m) {
-    ROS_INFO_ONCE("Using NavRELPOSNED9 serializer defined in ublox_msgs to get message length");
-    ros::serialization::LStream stream;
-    stream.next(m.version);
-    stream.next(m.reserved1);
-    stream.next(m.refStationId);
-    stream.next(m.iTOW);
-    stream.next(m.relPosN);
-    stream.next(m.relPosE);
-    stream.next(m.relPosD);
-    stream.next(m.relPosLength);
-    stream.next(m.relPosHeading);
-    stream.next(m.reserved2);
-    stream.next(m.relPosHPN);
-    stream.next(m.relPosHPE);
-    stream.next(m.relPosHPD);
-    stream.next(m.relPosHPLength);
-    stream.next(m.accN);
-    stream.next(m.accE);
-    stream.next(m.accD);
-    stream.next(m.accLength);
-    stream.next(m.accHeading);
-    stream.next(m.reserved3);
-    stream.next(m.flags);
-    return stream.getLength();
-  }
-
-  static void write(uint8_t *data, uint32_t size, 
-                    typename CallTraits::param_type m) {
-    ROS_INFO_ONCE("Using NavRELPOSNED9 serializer defined in ublox_msgs to write message");
-    ros::serialization::OStream stream(data, size);
-    stream.next(m.version);
-    stream.next(m.reserved1);
-    stream.next(m.refStationId);
-    stream.next(m.iTOW);
-    stream.next(m.relPosN);
-    stream.next(m.relPosE);
-    stream.next(m.relPosD);
-    stream.next(m.relPosLength);
-    stream.next(m.relPosHeading);
-    stream.next(m.reserved2);
-    stream.next(m.relPosHPN);
-    stream.next(m.relPosHPE);
-    stream.next(m.relPosHPD);
-    stream.next(m.relPosHPLength);
-    stream.next(m.accN);
-    stream.next(m.accE);
-    stream.next(m.accD);
-    stream.next(m.accLength);
-    stream.next(m.accHeading);
-    stream.next(m.reserved3);
-    stream.next(m.flags);
-  }
 };
-
 
 ///
 /// @brief Serializes the NavPVT message, which has a differing message definitions on
-/// each end (additional Header on ROS-side which is not present on Ublox Receiver)
+/// each end (additional Header on ROS-side which is not present on Ublox Receiver). Overriden read
+/// method to add stamp, falls back to ros::serialization::Serializer for other tasks.
 ///
 template <typename ContainerAllocator>
 struct Serializer<ublox_msgs::NavPVT_<ContainerAllocator> > {
     typedef ublox_msgs::NavPVT_<ContainerAllocator> Msg;
     typedef boost::call_traits<Msg> CallTraits;
 
-    static void read(const uint8_t *data, uint32_t count, 
-                    typename CallTraits::reference m) {
-      ROS_INFO_ONCE("Using NavPVT serializer defined in ublox_msgs to read message");
-      ros::serialization::IStream stream(const_cast<uint8_t *>(data), count);
-      stream.next(m.iTOW);
-      stream.next(m.year);
-      stream.next(m.month);
-      stream.next(m.day);
-      stream.next(m.hour);
-      stream.next(m.min);
-      stream.next(m.sec);
-      stream.next(m.valid);
-      stream.next(m.tAcc);
-      stream.next(m.nano);
-      stream.next(m.fixType);
-      stream.next(m.flags);
-      stream.next(m.flags2);
-      stream.next(m.numSV);
-      stream.next(m.lon);
-      stream.next(m.lat);
-      stream.next(m.height);
-      stream.next(m.hMSL);
-      stream.next(m.hAcc);
-      stream.next(m.vAcc);
-      stream.next(m.velN);
-      stream.next(m.velE);
-      stream.next(m.velD);
-      stream.next(m.gSpeed);
-      stream.next(m.heading);
-      stream.next(m.sAcc);
-      stream.next(m.headAcc);
-      stream.next(m.pDOP);
-      stream.next(m.reserved1);
-      stream.next(m.headVeh);
-      stream.next(m.magDec);
-      stream.next(m.magAcc);
-      m.header.stamp = ros::Time::now();
-    }
-
-    static uint32_t serializedLength (typename CallTraits::param_type m) {
-      ROS_INFO_ONCE("Using NavPVT serializer defined in ublox_msgs to get message length");
-      ros::serialization::LStream stream;
-      stream.next(m.iTOW);
-      stream.next(m.year);
-      stream.next(m.month);
-      stream.next(m.day);
-      stream.next(m.hour);
-      stream.next(m.min);
-      stream.next(m.sec);
-      stream.next(m.valid);
-      stream.next(m.tAcc);
-      stream.next(m.nano);
-      stream.next(m.fixType);
-      stream.next(m.flags);
-      stream.next(m.flags2);
-      stream.next(m.numSV);
-      stream.next(m.lon);
-      stream.next(m.lat);
-      stream.next(m.height);
-      stream.next(m.hMSL);
-      stream.next(m.hAcc);
-      stream.next(m.vAcc);
-      stream.next(m.velN);
-      stream.next(m.velE);
-      stream.next(m.velD);
-      stream.next(m.gSpeed);
-      stream.next(m.heading);
-      stream.next(m.sAcc);
-      stream.next(m.headAcc);
-      stream.next(m.pDOP);
-      stream.next(m.reserved1);
-      stream.next(m.headVeh);
-      stream.next(m.magDec);
-      stream.next(m.magAcc);
-
-      return stream.getLength();
-    }
-
-    static void write(uint8_t *data, uint32_t size, 
-                      typename CallTraits::param_type m) {
-      ROS_INFO_ONCE("Using NavPVT serializer defined in ublox_msgs to write message");
-      ros::serialization::OStream stream(data, size);
-      stream.next(m.iTOW);
-      stream.next(m.year);
-      stream.next(m.month);
-      stream.next(m.day);
-      stream.next(m.hour);
-      stream.next(m.min);
-      stream.next(m.sec);
-      stream.next(m.valid);
-      stream.next(m.tAcc);
-      stream.next(m.nano);
-      stream.next(m.fixType);
-      stream.next(m.flags);
-      stream.next(m.flags2);
-      stream.next(m.numSV);
-      stream.next(m.lon);
-      stream.next(m.lat);
-      stream.next(m.height);
-      stream.next(m.hMSL);
-      stream.next(m.hAcc);
-      stream.next(m.vAcc);
-      stream.next(m.velN);
-      stream.next(m.velE);
-      stream.next(m.velD);
-      stream.next(m.gSpeed);
-      stream.next(m.heading);
-      stream.next(m.sAcc);
-      stream.next(m.headAcc);
-      stream.next(m.pDOP);
-      stream.next(m.reserved1);
-      stream.next(m.headVeh);
-      stream.next(m.magDec);
-      stream.next(m.magAcc);
-    }
-  };
+  static void read(const uint8_t *data, uint32_t count, 
+                  typename CallTraits::reference m) {
+    ROS_INFO_ONCE("Using NavPVT serializer defined in ublox_msgs to read message");
+    ros::serialization::IStream stream(const_cast<uint8_t *>(data), count);
+    stream.next(m.iTOW);
+    stream.next(m.year);
+    stream.next(m.month);
+    stream.next(m.day);
+    stream.next(m.hour);
+    stream.next(m.min);
+    stream.next(m.sec);
+    stream.next(m.valid);
+    stream.next(m.tAcc);
+    stream.next(m.nano);
+    stream.next(m.fixType);
+    stream.next(m.flags);
+    stream.next(m.flags2);
+    stream.next(m.numSV);
+    stream.next(m.lon);
+    stream.next(m.lat);
+    stream.next(m.height);
+    stream.next(m.hMSL);
+    stream.next(m.hAcc);
+    stream.next(m.vAcc);
+    stream.next(m.velN);
+    stream.next(m.velE);
+    stream.next(m.velD);
+    stream.next(m.gSpeed);
+    stream.next(m.heading);
+    stream.next(m.sAcc);
+    stream.next(m.headAcc);
+    stream.next(m.pDOP);
+    stream.next(m.reserved1);
+    stream.next(m.headVeh);
+    stream.next(m.magDec);
+    stream.next(m.magAcc);
+    m.header.stamp = ros::Time::now();
+  }
+};
 
 
 } // namespace ublox
