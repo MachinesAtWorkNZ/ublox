@@ -104,3 +104,6 @@ uint32 FLAGS_REL_POS_NORM = 512   # Set if extrapolated reference observations
                                   # were used to compute moving baseline
                                   # solution this epoch (not supported in
                                   # protocol versions less than 20.3)
+
+Header header                     # Header injected by ROS Node - This data is not present 
+                                  # in the serialised message from the GPS

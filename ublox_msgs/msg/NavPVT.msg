@@ -90,3 +90,6 @@ uint8[6] reserved1      # Reserved
 int32 headVeh           # Heading of vehicle (2-D) [deg / 1e-5]
 int16 magDec            # Magnetic declination [deg / 1e-2]
 uint16 magAcc           # Magnetic declination accuracy [deg / 1e-2]
+
+Header header           # Header injected by ROS Node - This data is not present 
+                        # in the serialised message from the GPS

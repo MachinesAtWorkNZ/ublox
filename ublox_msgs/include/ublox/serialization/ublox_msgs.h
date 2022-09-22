@@ -877,6 +877,95 @@ struct Serializer<ublox_msgs::EsfSTATUS_<ContainerAllocator> > {
   }
 };
 
+///
+/// @brief Serializes the NavRELPOSNED9 message, which has differing message definitions on each
+/// end (additional Header on ROS-side which is not present on Ublox Receiver). Overridden read
+/// method to add stamp, falls back to ros::serialization::Serializer for other methods.
+///
+template <typename ContainerAllocator>
+struct Serializer<ublox_msgs::NavRELPOSNED9_<ContainerAllocator> > {
+  typedef ublox_msgs::NavRELPOSNED9_<ContainerAllocator> Msg;
+  typedef boost::call_traits<Msg> CallTraits;
+
+  static void read(const uint8_t *data, uint32_t count, 
+                  typename CallTraits::reference m) {
+    ROS_INFO_ONCE("Using NavRELPOSNED9 serializer defined in ublox_msgs to read message");
+    ros::serialization::IStream stream(const_cast<uint8_t *>(data), count);
+    stream.next(m.version);
+    stream.next(m.reserved1);
+    stream.next(m.refStationId);
+    stream.next(m.iTOW);
+    stream.next(m.relPosN);
+    stream.next(m.relPosE);
+    stream.next(m.relPosD);
+    stream.next(m.relPosLength);
+    stream.next(m.relPosHeading);
+    stream.next(m.reserved2);
+    stream.next(m.relPosHPN);
+    stream.next(m.relPosHPE);
+    stream.next(m.relPosHPD);
+    stream.next(m.relPosHPLength);
+    stream.next(m.accN);
+    stream.next(m.accE);
+    stream.next(m.accD);
+    stream.next(m.accLength);
+    stream.next(m.accHeading);
+    stream.next(m.reserved3);
+    stream.next(m.flags);
+    m.header.stamp = ros::Time::now();
+  }
+};
+
+///
+/// @brief Serializes the NavPVT message, which has differing message definitions on each
+/// end (additional Header on ROS-side which is not present on Ublox Receiver). Overridden read
+/// method to add stamp, falls back to ros::serialization::Serializer for other methods.
+///
+template <typename ContainerAllocator>
+struct Serializer<ublox_msgs::NavPVT_<ContainerAllocator> > {
+    typedef ublox_msgs::NavPVT_<ContainerAllocator> Msg;
+    typedef boost::call_traits<Msg> CallTraits;
+
+  static void read(const uint8_t *data, uint32_t count, 
+                  typename CallTraits::reference m) {
+    ROS_INFO_ONCE("Using NavPVT serializer defined in ublox_msgs to read message");
+    ros::serialization::IStream stream(const_cast<uint8_t *>(data), count);
+    stream.next(m.iTOW);
+    stream.next(m.year);
+    stream.next(m.month);
+    stream.next(m.day);
+    stream.next(m.hour);
+    stream.next(m.min);
+    stream.next(m.sec);
+    stream.next(m.valid);
+    stream.next(m.tAcc);
+    stream.next(m.nano);
+    stream.next(m.fixType);
+    stream.next(m.flags);
+    stream.next(m.flags2);
+    stream.next(m.numSV);
+    stream.next(m.lon);
+    stream.next(m.lat);
+    stream.next(m.height);
+    stream.next(m.hMSL);
+    stream.next(m.hAcc);
+    stream.next(m.vAcc);
+    stream.next(m.velN);
+    stream.next(m.velE);
+    stream.next(m.velD);
+    stream.next(m.gSpeed);
+    stream.next(m.heading);
+    stream.next(m.sAcc);
+    stream.next(m.headAcc);
+    stream.next(m.pDOP);
+    stream.next(m.reserved1);
+    stream.next(m.headVeh);
+    stream.next(m.magDec);
+    stream.next(m.magAcc);
+    m.header.stamp = ros::Time::now();
+  }
+};
+
 
 } // namespace ublox
 
