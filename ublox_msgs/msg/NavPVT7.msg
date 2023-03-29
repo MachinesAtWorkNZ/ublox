@@ -86,3 +86,6 @@ uint32 headAcc          # Heading Accuracy Estimate (both motion & vehicle)
 
 uint16 pDOP             # Position DOP [1 / 0.01]
 uint8[6] reserved1      # Reserved
+
+Header header           # Header injected by ROS Node - This data is not present 
+                        # in the serialised message from the GPS

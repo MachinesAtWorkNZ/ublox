@@ -962,7 +962,31 @@ struct Serializer<ublox_msgs::NavPVT_<ContainerAllocator> > {
     stream.next(m.headVeh);
     stream.next(m.magDec);
     stream.next(m.magAcc);
+
+    // Only use system stamp, not GPS - CRS-1522
     m.header.stamp = ros::Time::now();
+
+    // uint8_t valid_time = m.VALID_DATE | m.VALID_TIME | m.VALID_FULLY_RESOLVED;
+    // if (((m.valid & valid_time) == valid_time) &&
+    //     (m.flags2 & m.FLAGS2_CONFIRMED_AVAILABLE)) {
+    //   // Use NavPVT timestamp since it is valid
+    //   // The time in nanoseconds from the NavPVT message can be between -1e9 and 1e9
+    //   //  The ros time uses only unsigned values, so a negative nano seconds must be
+    //   //  converted to a positive value
+    //   if (m.nano < 0) {
+    //     m.header.stamp.sec = toUtcSeconds(m) - 1;
+    //     m.header.stamp.nsec = (uint32_t)(m.nano + 1e9);
+    //   }
+    //   else {
+    //     m.header.stamp.sec = toUtcSeconds(m);
+    //     m.header.stamp.nsec = (uint32_t)(m.nano);
+    //   }
+    // } else {
+    //   // Use ROS time since NavPVT timestamp is not valid
+    //   ROS_WARN_THROTTLE("NavPVT timestamp not valid, using ROS time instead");
+    //   m.header.stamp = ros::Time::now();
+    // }
+
   }
 };
 
