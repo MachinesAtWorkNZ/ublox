@@ -361,8 +361,20 @@ void UbloxNode::initializeRosDiagnostics() {
 
 void UbloxNode::processMonVer() {
   ublox_msgs::MonVER monVer;
-  if (!gps.poll(monVer))
+  bool success = false;
+  for (int retries = 0; retries < 10; retries++)
+  {
+    boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+    if (gps.poll(monVer)) {
+      success = true;
+      ROS_INFO("Polled monVer after %i retries", retries);
+      break;
+    }
+  }
+
+  if (!success) {
     throw std::runtime_error("Failed to poll MonVER & set relevant settings");
+  }
 
   ROS_DEBUG("%s, HW VER: %s", monVer.swVersion.c_array(),
                monVer.hwVersion.c_array());
