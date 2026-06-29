@@ -529,12 +529,6 @@ template <typename ConfigT>
 bool Gps::configure(const ConfigT& message, bool wait) {
   if (!worker_) return false;
 
-  // Reset ack
-  Ack ack;
-  ack.type = WAIT;
-  ack_.store(ack, boost::memory_order_seq_cst);
-
-  // Encode the message
   std::vector<unsigned char> out(kWriterSize);
   ublox::Writer writer(out.data(), out.size());
   if (!writer.write(message)) {
@@ -542,15 +536,32 @@ bool Gps::configure(const ConfigT& message, bool wait) {
               message.CLASS_ID, message.MESSAGE_ID);
     return false;
   }
-  // Send the message to the device
-  worker_->send(out.data(), writer.end() - out.data());
+  const std::size_t length = writer.end() - out.data();
+  const int kConfigAttempts = 3;
+  for (int attempt = 1; attempt <= kConfigAttempts; ++attempt) {
+    Ack ack;
+    ack.type = WAIT;
+    ack_.store(ack, boost::memory_order_seq_cst);
 
-  if (!wait) return true;
+    worker_->send(out.data(), length);
 
-  // Wait for an acknowledgment and return whether or not it was received
-  return waitForAcknowledge(default_timeout_,
-                            message.CLASS_ID,
-                            message.MESSAGE_ID);
+    if (!wait) return true;
+
+    if (waitForAcknowledge(default_timeout_, message.CLASS_ID, message.MESSAGE_ID))
+      return true;
+
+    Ack last = ack_.load(boost::memory_order_seq_cst);
+    if (last.type == NACK && last.class_id == message.CLASS_ID && last.msg_id == message.MESSAGE_ID)
+    {
+      // Definitive rejection (NACK), don't retry
+      return false;
+    }
+
+    if (attempt < kConfigAttempts)
+      ROS_WARN("Config 0x%02x / 0x%02x not acknowledged (attempt %d/%d), retrying",
+               message.CLASS_ID, message.MESSAGE_ID, attempt, kConfigAttempts);
+  }
+  return false;
 }
 
 }  // namespace ublox_gps

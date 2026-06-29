@@ -590,11 +590,12 @@ bool Gps::waitForAcknowledge(const boost::posix_time::time_duration& timeout,
                              uint8_t class_id, uint8_t msg_id) {
   ROS_DEBUG_COND(debug >= 2, "Waiting for ACK 0x%02x / 0x%02x",
                  class_id, msg_id);
+  // second_clock truncates to whole seconds, so `now + 1s` can be as little as a few ms. Use universal_time instead
   boost::posix_time::ptime wait_until(
-      boost::posix_time::second_clock::local_time() + timeout);
+      boost::posix_time::microsec_clock::universal_time() + timeout);
 
   Ack ack = ack_.load(boost::memory_order_seq_cst);
-  while (boost::posix_time::second_clock::local_time() < wait_until
+  while (boost::posix_time::microsec_clock::universal_time() < wait_until
          && (ack.class_id != class_id
              || ack.msg_id != msg_id
              || ack.type == WAIT)) {
