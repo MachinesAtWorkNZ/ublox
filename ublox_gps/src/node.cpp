@@ -1038,6 +1038,9 @@ void UbloxFirmware8::getRosParams() {
   nh->param("clear_bbr", clear_bbr_, false);
   gps.setSaveOnShutdown(nh->param("save_on_shutdown", false));
 
+  // Stamp NavPVT-derived messages with the GNSS measurement epoch (requires a GPS-disciplined clock)
+  nh->param("use_gnss_time", use_gnss_time_, false);
+
   // GNSS enable/disable
   nh->param("gnss/gps", enable_gps_, true);
   nh->param("gnss/galileo", enable_galileo_, false);

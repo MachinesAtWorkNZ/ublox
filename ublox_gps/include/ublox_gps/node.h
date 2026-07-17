@@ -773,7 +773,31 @@ class UbloxFirmware7Plus : public UbloxFirmware {
    * is published. This function also calls the ROS diagnostics updater.
    * @param m the message to publish
    */
-  void callbackNavPvt(const NavPVT& m) {
+  void callbackNavPvt(const NavPVT& msg_in) {
+    NavPVT m = msg_in;
+
+    // CRS-1522 switched NavPVT stamping to system time at decode because vehicle clocks were not
+    // GPS-disciplined. With the system clock disciplined to GPS time (chrony), the measurement epoch is
+    // directly valid in the local timebase; use_gnss_time restores measurement-epoch stamping, removing
+    // the receiver solution + transport latency (~120 ms measured on ZED-F9P) from the stamp. The
+    // republished NavPVT carries the same stamp, so downstream consumers (dual GPS heading/position)
+    // inherit it. Requires a disciplined clock — leave false otherwise.
+    if (use_gnss_time_) {
+      const uint8_t valid_time = m.VALID_DATE | m.VALID_TIME | m.VALID_FULLY_RESOLVED;
+      if (((m.valid & valid_time) == valid_time) && (m.flags2 & m.FLAGS2_CONFIRMED_AVAILABLE)) {
+        // m.nano can be negative (time just before the whole second); ros::Time is unsigned
+        if (m.nano < 0) {
+          m.header.stamp.sec = toUtcSeconds(m) - 1;
+          m.header.stamp.nsec = (uint32_t)(m.nano + 1e9);
+        } else {
+          m.header.stamp.sec = toUtcSeconds(m);
+          m.header.stamp.nsec = (uint32_t)(m.nano);
+        }
+      } else {
+        ROS_WARN_THROTTLE(10.0, "use_gnss_time: NavPVT time not fully resolved, stamping with system time");
+      }
+    }
+
     if(enabled["nav_pvt"]) {
       // NavPVT publisher
       static ros::Publisher publisher = nh->advertise<NavPVT>("navpvt",
@@ -793,25 +817,6 @@ class UbloxFirmware7Plus : public UbloxFirmware {
     // Use the stamp from the read message
     fix.header.stamp = m.header.stamp;
 
-    // uint8_t valid_time = m.VALID_DATE | m.VALID_TIME | m.VALID_FULLY_RESOLVED;
-    // if (((m.valid & valid_time) == valid_time) &&
-    //     (m.flags2 & m.FLAGS2_CONFIRMED_AVAILABLE)) {
-    //   // Use NavPVT timestamp since it is valid
-    //   // The time in nanoseconds from the NavPVT message can be between -1e9 and 1e9
-    //   //  The ros time uses only unsigned values, so a negative nano seconds must be
-    //   //  converted to a positive value
-    //   if (m.nano < 0) {
-    //     fix.header.stamp.sec = toUtcSeconds(m) - 1;
-    //     fix.header.stamp.nsec = (uint32_t)(m.nano + 1e9);
-    //   }
-    //   else {
-    //     fix.header.stamp.sec = toUtcSeconds(m);
-    //     fix.header.stamp.nsec = (uint32_t)(m.nano);
-    //   }
-    // } else {
-    //   // Use ROS time since NavPVT timestamp is not valid
-    //   fix.header.stamp = ros::Time::now();
-    // }
     // Set the LLA
     fix.latitude = m.lat * 1e-7; // to deg
     fix.longitude = m.lon * 1e-7; // to deg
@@ -873,6 +878,10 @@ class UbloxFirmware7Plus : public UbloxFirmware {
   }
 
  protected:
+
+  //! Stamp NavPVT/fix/fix_velocity with the GNSS measurement epoch instead of decode time (requires a
+  //! GPS-disciplined system clock)
+  bool use_gnss_time_ = false;
 
   /**
    * @brief Update the fix diagnostics from Nav PVT message.
