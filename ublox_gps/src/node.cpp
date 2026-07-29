@@ -1266,6 +1266,20 @@ void UbloxFirmware8::subscribe() {
   if (enabled["rxm_rtcm"])
     gps.subscribe<ublox_msgs::RxmRTCM>(boost::bind(
         publish<ublox_msgs::RxmRTCM>, _1, "rxmrtcm"), kSubscribeRate);
+
+  // RXM-RAWX and RXM-SFRBX: the per-satellite pseudorange, carrier phase and Doppler, and the
+  // broadcast navigation subframes needed to turn them into satellite positions. RawDataProduct
+  // carries the protocol-14 RXM-RAW equivalents and TimProduct carries these two, but a ZED-F9P is
+  // neither -- it reports HPG ROV or HDG, so on this fleet nothing subscribed to them at all.
+  nh->param("publish/rxm/raw", enabled["rxm_raw"], enabled["rxm"]);
+  if (enabled["rxm_raw"])
+    gps.subscribe<ublox_msgs::RxmRAWX>(boost::bind(
+        publish<ublox_msgs::RxmRAWX>, _1, "rxmraw"), kSubscribeRate);
+
+  nh->param("publish/rxm/sfrb", enabled["rxm_sfrb"], enabled["rxm"]);
+  if (enabled["rxm_sfrb"])
+    gps.subscribe<ublox_msgs::RxmSFRBX>(boost::bind(
+        publish<ublox_msgs::RxmSFRBX>, _1, "rxmsfrb"), kSubscribeRate);
 }
 
 //
