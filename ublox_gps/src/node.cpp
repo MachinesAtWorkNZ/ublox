@@ -1271,11 +1271,20 @@ void UbloxFirmware8::subscribe() {
   // broadcast navigation subframes needed to turn them into satellite positions. RawDataProduct
   // carries the protocol-14 RXM-RAW equivalents and TimProduct carries these two, but a ZED-F9P is
   // neither -- it reports HPG ROV or HDG, so on this fleet nothing subscribed to them at all.
+  //
+  // RAWX is the one message here big enough to matter: 24 + 32*numMeas bytes, about 1.3 kB with a
+  // full multi-GNSS constellation. At kSubscribeRate it would go out every nav epoch, which on a
+  // 115200 UART is 10.4 kB/s against a budget of 11.5 -- more than the link carries, before NAV-PVT.
+  // So the divisor is a parameter, and its default is one message per second at an 8 Hz nav rate.
+  int raw_rate = 8;
+  nh->param("publish/rxm/raw_rate", raw_rate, raw_rate);
   nh->param("publish/rxm/raw", enabled["rxm_raw"], enabled["rxm"]);
   if (enabled["rxm_raw"])
     gps.subscribe<ublox_msgs::RxmRAWX>(boost::bind(
-        publish<ublox_msgs::RxmRAWX>, _1, "rxmraw"), kSubscribeRate);
+        publish<ublox_msgs::RxmRAWX>, _1, "rxmraw"), raw_rate);
 
+  // SFRBX carries broadcast ephemeris, which the satellite repeats on a fixed schedule -- taking
+  // every one costs about 0.4 kB/s and skipping one loses a subframe outright.
   nh->param("publish/rxm/sfrb", enabled["rxm_sfrb"], enabled["rxm"]);
   if (enabled["rxm_sfrb"])
     gps.subscribe<ublox_msgs::RxmSFRBX>(boost::bind(
