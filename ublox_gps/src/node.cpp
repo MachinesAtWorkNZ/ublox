@@ -1255,6 +1255,22 @@ void UbloxFirmware8::subscribe() {
     gps.subscribe<ublox_msgs::NavSAT>(boost::bind(
         publish<ublox_msgs::NavSAT>, _1, "navsat"), kNavSvInfoSubscribeRate);
 
+  // Subscribe to Nav DOP. The message exists in ublox_msgs and Message::NAV::DOP is defined, but
+  // nothing ever subscribed to it, so a ZED-F9P could not publish its own dilution of precision.
+  //
+  // Worth having because DOP is the geometry half of a fix's quality, and hAcc is not. hAcc is the
+  // receiver's own estimate and is optimistic under multipath -- the canopy failure is a confidently
+  // wrong fix reporting centimetres. DOP is computed from the satellite geometry alone, so a good hAcc
+  // with a poor DOP is exactly the disagreement worth seeing, and neither number alone shows it.
+  //
+  // 18 bytes at one per second is negligible on the UART, unlike RXM-RAWX below.
+  int dop_rate = 8;
+  nh->param("publish/nav/dop_rate", dop_rate, dop_rate);
+  nh->param("publish/nav/dop", enabled["nav_dop"], enabled["nav"]);
+  if (enabled["nav_dop"])
+    gps.subscribe<ublox_msgs::NavDOP>(boost::bind(
+        publish<ublox_msgs::NavDOP>, _1, "navdop"), dop_rate);
+
   // Subscribe to Mon HW
   nh->param("publish/mon/hw", enabled["mon_hw"], enabled["mon"]);
   if (enabled["mon_hw"])
